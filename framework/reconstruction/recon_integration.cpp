@@ -90,7 +90,7 @@ ReconIntegration::ReconIntegration(CalibrationFiles const& cfs, CalibVolumes con
   m_program_integration->setUniform("res_tsdf", m_res_volume);
   m_program_integration->setUniform("limit", m_limit);
 
-  m_volume_tsdf->image3D(0, GL_R32F, glm::ivec3{m_res_volume}, 0, GL_RED, GL_FLOAT, nullptr);
+  m_volume_tsdf->image3D(0, GL_RG32F, glm::ivec3{m_res_volume}, 0, GL_RG, GL_FLOAT, nullptr);
   m_volume_tsdf->bindActive(GL_TEXTURE0 + 29);
   std::cout << "resolution " << m_res_volume.x << ", " << m_res_volume.y << ", " << m_res_volume.z << std::endl;
   
@@ -159,9 +159,12 @@ void ReconIntegration::integrate() {
   glEnable(GL_RASTERIZER_DISCARD);
   m_program_integration->use();
 
-  m_volume_tsdf->bindImageTexture(start_image_unit, 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_R32F);
-
-  m_sampler.sample();
+  m_volume_tsdf->bindImageTexture(start_image_unit, 0, GL_TRUE, 0, GL_READ_WRITE, GL_RG32F);
+  
+  for(unsigned i = 0; i < m_num_kinects; ++i) {
+    m_program_integration->setUniform("num_kinect", i);
+    m_sampler.sample();
+ }
 
   m_program_integration->release();
   glDisable(GL_RASTERIZER_DISCARD);
