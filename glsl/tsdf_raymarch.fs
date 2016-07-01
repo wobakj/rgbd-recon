@@ -67,13 +67,13 @@ void main() {
     vec4 posEnd = getStartPos(ivec2(gl_FragCoord.xy));
     sample_pos = posEnd.xyz;
   }
-  // out_Color.rgb = sample_pos;
-  // return;
   bool inside = isInside(sample_pos);  
   // cache value of previous sample
   float prev_density = sample(sample_pos); 
 
   while (inside) {
+  out_Color.rgb = sample_pos;
+  return;
      // get sample
     float density = sample(sample_pos);
 
