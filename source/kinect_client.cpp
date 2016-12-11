@@ -31,6 +31,8 @@ using namespace gl;
 #include "sensor.hpp"
 #include "device_manager.hpp"
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
 #include <Point3.h>
 #include <BoundingBox.h>
@@ -49,6 +51,16 @@ using namespace gl;
 #include "recon_calibs.hpp"
 #include "recon_integration.hpp"
 #include "recon_mvt.hpp"
+// attachment related
+#include "model_loader.hpp"
+#include "model_object.hpp"
+#include "texture_loader.hpp"
+#include "texture_object.hpp"
+
+std::unique_ptr<ModelObject> g_model_attachment;
+TextureObject g_texture_diffuse;
+TextureObject g_texture_normal;
+globjects::ref_ptr<globjects::Program> g_program_attachment;
 
 /// general setup
 unsigned g_screenWidth  = 1280;
@@ -202,12 +214,40 @@ void init(std::vector<std::string> const& args){
   g_recon_integration->setDrawBricks(g_draw_bricks);
   g_recon_integration->setUseBricks(g_bricking);
 
-
+// attachments
   int port = 5000;
   int id_device = 10;
 
   g_device = sensor::devicemanager::the()->get_dtrack(port, sensor::timevalue::const_050_ms);
   g_sensor = new sensor::sensor(g_device, id_device/*station*/);
+
+  glm::fmat4 offset{};
+  // offset = glm::rotate(glm::fmat4{1.0f}, 180.0f, glm::fvec3{0.0f, 1.0f, 0.0f});
+  offset = glm::scale(glm::fmat4{1.0}, glm::fvec3{0.04}) * offset;
+  g_sensor->setReceiverOffset(offset);
+
+  // std::vector<GLfloat> data = {1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+  //                              0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+
+  //                              0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+  //                              0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+
+  //                              0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 
+  //                              0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}; 
+  // model quad = model(data, model::POSITION | model::NORMAL);
+  // g_model_attachment = std::unique_ptr<ModelObject>{new ModelObject(quad, GL_LINES)};
+
+  g_model_attachment = std::unique_ptr<ModelObject>{new ModelObject(model_loader::obj("../resources/models/attachment.obj", model::NORMAL | model::TEXCOORD | model::TANGENT), GL_TRIANGLES)};
+  g_texture_diffuse = texture_loader::file("../resources/textures/attachment.png");
+  g_texture_normal = texture_loader::file("../resources/textures/earthNormal.png");
+
+  g_program_attachment = new globjects::Program();
+  g_program_attachment->attach(
+    globjects::Shader::fromFile(GL_VERTEX_SHADER,   "glsl/simple.vs"),
+    globjects::Shader::fromFile(GL_FRAGMENT_SHADER, "glsl/simple.fs")
+  );
+  g_program_attachment->setUniform("ColorTexture", g_texture_diffuse.unit());
+  g_program_attachment->setUniform("NormalTexture", g_texture_normal.unit());
 }
 
 void init_config(std::vector<std::string> const& args) {
@@ -455,7 +495,8 @@ void frameStep (){
   draw3d();
 
   ImGui::Render();
-  std::cout << glm::to_string(g_sensor->getMatrix()) << std::endl;
+  // std::cout << glm::to_string(g_sensor->getMatrix()) << std::endl;
+  g_program_attachment->setUniform("ModelMatrix", g_sensor->getMatrix());
 
   glfwSwapBuffers(g_window);
 }
@@ -566,6 +607,10 @@ void draw3d(void)
     // glPopAttrib();
     g_bbox.draw();
   }
+ 
+  g_program_attachment->use();
+  g_model_attachment->bind();
+  g_model_attachment->draw();
 
   if (g_draw_textures) {
     unsigned num = g_num_texture % 2;
@@ -585,6 +630,9 @@ void update_view(GLFWwindow* window, int width, int height){
   g_screenHeight = height;
   g_aspect       = g_screenWidth * 1.0/g_screenHeight;
   g_camera.setAspect(g_aspect);
+
+  // glm::fmat4 projection = glm::perspective(50.0f, g_aspect, 0.1f, 200.0f);
+  // g_program_attachment->setUniform("ColorTexture", projection);
 
   for (auto& recon : g_recons) {
     recon->resize(width, height);

@@ -89,7 +89,18 @@ add_sublibrary(svg ${CMAKE_CURRENT_SOURCE_DIR}/external/svg "-w")
 # catch
 set(CATCH_DIRECTORY catch-1.1)
 list(APPEND INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/external/${CATCH_DIRECTORY})
-
+################################
+# include stb_image
+include_directories(external/stb_image-2.0.6)
+# suppress warnings caused by stb_image which is compiled in texture_loader 
+if(NOT MSVC)
+  set_source_files_properties(framework/attachment/texture_loader.cpp PROPERTIES COMPILE_FLAGS "-Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable")
+endif()
+################################
+# add tinyobjloader
+include_directories(external/tinyobjloader-aa07206)
+# just one file so it can be directly compiled into main exe
+file(GLOB TINYOBJLOADER_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/external/tinyobjloader-aa07206/*.cc)
 ################################
 add_definitions(-DGLEW_STATIC)
 # to prevent CGAL assertion fail 

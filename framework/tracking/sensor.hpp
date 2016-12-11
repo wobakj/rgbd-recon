@@ -6,6 +6,7 @@
 // includes, system
 #define GLM_FORCE_RADIANS
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_precision.hpp>
 
 // includes, project
 
@@ -24,22 +25,22 @@ public:
 
   size_t                 getFrame() const;
   const timevalue& getTimestamp() const;
-  const glm::mat4&     getMatrix();
+  const glm::fmat4&     getMatrix();
   bool                   getButton(size_t /*which*/) const;
 
-  void                   setTransmitterOffset(const glm::mat4& /*transmitterOffset*/);
-  void                   setReceiverOffset(const glm::mat4& /*receiverOffset*/);
+  void                   setTransmitterOffset(const glm::fmat4& /*transmitterOffset*/);
+  void                   setReceiverOffset(const glm::fmat4& /*receiverOffset*/);
 
-  const glm::mat4&     getTransmitterOffset() const;
-  const glm::mat4&     getReceiverOffset() const;
+  const glm::fmat4&     getTransmitterOffset() const;
+  const glm::fmat4&     getReceiverOffset() const;
   
 
 private:
   
   const device::station& _station;
-  glm::mat4      _devicemat;
-  glm::mat4      _transmitterOffset;
-  glm::mat4      _receiverOffset;
+  glm::fmat4      _devicemat;
+  glm::fmat4      _transmitterOffset;
+  glm::fmat4      _receiverOffset;
   
 
 };

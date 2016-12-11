@@ -10,7 +10,7 @@ add_library(framework STATIC
   ${FRAMEWORK_HEADER})
 
 # self built libraries
-target_link_libraries(framework gloost fastdxt ${SQUISH_LIBRARIES} globjects glbinding)
+target_link_libraries(framework gloost fastdxt ${SQUISH_LIBRARIES} globjects glbinding ${TINYOBJLOADER_SOURCES})
 # global libraries
 target_link_libraries(framework GLU zmq CGAL ${BOOST_LIBRARIES} gmp mpfr -fopenmp)
 set_target_properties(framework PROPERTIES COMPILE_FLAGS "-fopenmp")
@@ -23,3 +23,4 @@ target_include_directories(framework PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/renderin
 target_include_directories(framework PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/io)
 target_include_directories(framework PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/reconstruction)
 target_include_directories(framework PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/tracking)
+target_include_directories(framework PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/attachment)
