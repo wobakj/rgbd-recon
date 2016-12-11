@@ -2,7 +2,7 @@
 #define GPUTIMER_H
 
 
-#include <timevalue.h>
+#include <timevalue.hpp>
 
 /*
     sensor::timevalue ts_now(sensor::clock::time());

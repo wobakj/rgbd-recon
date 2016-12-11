@@ -1,4 +1,4 @@
-#include "timevalue.h"
+#include "timevalue.hpp"
 
 // includes, system
 
@@ -16,7 +16,7 @@
 
 // includes, project
 
-#include <clock.h>
+#include <clock.hpp>
 
 // internal unnamed namespace
 

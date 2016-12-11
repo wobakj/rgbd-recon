@@ -28,6 +28,10 @@ using namespace gl;
 #include "configurator.hpp"
 #include "texture_blitter.hpp"
 
+#include "sensor.hpp"
+#include "device_manager.hpp"
+#include <glm/gtx/string_cast.hpp>
+
 #include <Point3.h>
 #include <BoundingBox.h>
 #include <PerspectiveCamera.h>
@@ -104,6 +108,9 @@ void quit(int status);
 std::shared_ptr<kinect::ReconIntegration> g_recon_integration{};
 std::vector<std::shared_ptr<kinect::Reconstruction>> g_recons;// 4
 std::unique_ptr<kinect::ReconCalibs> g_calibvis;// 4
+
+sensor::device* g_device;
+sensor::sensor* g_sensor;
 //////////////////////////////////////////////////////////////////////////////////////////
 void init(std::vector<std::string> const& args){
 
@@ -194,6 +201,13 @@ void init(std::vector<std::string> const& args){
   g_recon_integration->setSpaceSkip(g_skip_space);
   g_recon_integration->setDrawBricks(g_draw_bricks);
   g_recon_integration->setUseBricks(g_bricking);
+
+
+  int port = 5000;
+  int id_device = 10;
+
+  g_device = sensor::devicemanager::the()->get_dtrack(port, sensor::timevalue::const_050_ms);
+  g_sensor = new sensor::sensor(g_device, id_device/*station*/);
 }
 
 void init_config(std::vector<std::string> const& args) {
@@ -441,6 +455,8 @@ void frameStep (){
   draw3d();
 
   ImGui::Render();
+  std::cout << glm::to_string(g_sensor->getMatrix()) << std::endl;
+
   glfwSwapBuffers(g_window);
 }
 

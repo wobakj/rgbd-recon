@@ -1,6 +1,6 @@
 #include "CalibVolumes.hpp"
 #include <KinectCalibrationFile.h>
-#include <timevalue.h>
+#include <timevalue.hpp>
 
 #include <glbinding/gl/functions.h>
 #include <glbinding/gl/functions-patches.h>

@@ -22,3 +22,4 @@ target_include_directories(framework PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/measurem
 target_include_directories(framework PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/rendering)
 target_include_directories(framework PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/io)
 target_include_directories(framework PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/reconstruction)
+target_include_directories(framework PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/tracking)

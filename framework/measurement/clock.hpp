@@ -9,7 +9,7 @@
 
 // includes, project
 
-#include <timevalue.h>
+#include <timevalue.hpp>
 
 // exported namespace
 

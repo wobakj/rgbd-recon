@@ -1,7 +1,7 @@
 #include "Timer.h"
 
 
-#include <clock.h>
+#include <clock.hpp>
 
 namespace sensor{
 
